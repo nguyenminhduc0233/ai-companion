@@ -1,0 +1,3 @@
+# Avatar frames are downloaded here by scripts/fetch-assets.mjs (runs on `npm install`).
+# normal.png, happy.jpg, thinking.jpg, surprise.jpg, sympathy.jpg, celebrate.jpg, blink.jpg
+# Drop your own images with these names to use a different character.
