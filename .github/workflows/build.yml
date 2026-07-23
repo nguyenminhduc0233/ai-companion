@@ -1,0 +1,72 @@
+name: Build APK & EXE
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: android-actions/setup-android@v3
+      - name: Install deps (also fetches avatar frames + icon)
+        run: npm ci
+      - name: Build web core
+        run: npm run build
+      - name: Add Android platform
+        run: npx cap add android
+      - name: Sync Capacitor
+        run: npx cap sync android
+      - name: Gradle assembleDebug
+        run: cd android && chmod +x ./gradlew && ./gradlew assembleDebug
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk AI-Companion-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ai-companion-apk
+          path: AI-Companion-debug.apk
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install deps (also fetches avatar frames + icon)
+        run: npm ci
+      - name: Build portable EXE
+        run: npm run dist:win
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ai-companion-exe
+          path: release/*.exe
+
+  release:
+    needs: [android, windows]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist-artifacts
+      - name: Attach binaries to the GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist-artifacts/ai-companion-apk/*.apk
+            dist-artifacts/ai-companion-exe/*.exe
