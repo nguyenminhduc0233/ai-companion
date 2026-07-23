@@ -1,0 +1,67 @@
+{
+  "name": "ai-companion",
+  "version": "1.0.0",
+  "description": "AI Companion — a 3D avatar personal assistant. Shared web core packaged as an Android APK (Capacitor) and a Windows EXE (Electron).",
+  "author": "AI Companion",
+  "license": "MIT",
+  "private": true,
+  "main": "electron/main.cjs",
+  "scripts": {
+    "postinstall": "node scripts/fetch-assets.mjs",
+    "fetch:assets": "node scripts/fetch-assets.mjs",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173",
+    "electron:start": "electron .",
+    "electron:dev": "vite build && electron .",
+    "dist:win": "vite build && electron-builder --win portable --publish never",
+    "dist:win:dir": "vite build && electron-builder --win dir --publish never",
+    "cap:sync": "vite build && cap sync",
+    "android:add": "cap add android",
+    "android:build": "vite build && cap sync android && cd android && ./gradlew assembleDebug",
+    "clean": "rimraf dist release android/app/build"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/app": "^6.0.1",
+    "@capacitor/core": "^6.1.2",
+    "@pixiv/three-vrm": "^3.1.6",
+    "dompurify": "^3.1.6",
+    "highlight.js": "^11.10.0",
+    "mammoth": "^1.8.0",
+    "marked": "^13.0.3",
+    "pdfjs-dist": "^4.5.136",
+    "tesseract.js": "^5.1.0",
+    "three": "^0.167.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2",
+    "electron": "^31.3.1",
+    "electron-builder": "^24.13.3",
+    "rimraf": "^6.0.1",
+    "vite": "^5.4.2"
+  },
+  "build": {
+    "appId": "com.aicompanion.app",
+    "productName": "AI Companion",
+    "directories": {
+      "output": "release",
+      "buildResources": "public/icons"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "public/icons/icon.png",
+      "artifactName": "AI-Companion-${version}-portable.exe"
+    },
+    "portable": {
+      "artifactName": "AI-Companion-${version}-portable.exe"
+    }
+  }
+}
