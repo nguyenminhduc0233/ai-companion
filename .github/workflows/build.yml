@@ -14,14 +14,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
       - uses: android-actions/setup-android@v3
       - name: Install deps (also fetches avatar frames + icon)
-        run: npm ci
+        run: npm install
       - name: Build web core
         run: npm run build
       - name: Add Android platform
@@ -44,9 +43,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
       - name: Install deps (also fetches avatar frames + icon)
-        run: npm ci
+        run: npm install
       - name: Build portable EXE
         run: npm run dist:win
       - uses: actions/upload-artifact@v4
